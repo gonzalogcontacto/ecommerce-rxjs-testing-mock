@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -7,13 +8,13 @@ import { Observable, Subject } from 'rxjs';
 
 export class ProductsService {
 
-  cart$: Subject<Object[]> = new Subject()
+  cart$: Subject<Product[]> = new Subject()
 
   constructor() {
     this.getCart()
   }
 
-  getCart$() : Observable<Object[]> {
+  getCart$() : Observable<Product[]> {
      return this.cart$.asObservable() 
   } 
 
@@ -24,12 +25,12 @@ export class ProductsService {
     this.cart$.next(await result.json())
   }
 
-  async getProducts() {
+  async getProducts() : Promise<Product[]> {
     let result = await fetch("http://localhost:3000/products");
     return await result.json()
   }
 
-  async addProductToCart(product){ 
+  async addProductToCart(product: Product){ 
     await fetch('http://localhost:3000/cart', {
 		          method: 'POST', // or 'PUT'
 		          body: JSON.stringify(product), // data can be `string` or {object}!
