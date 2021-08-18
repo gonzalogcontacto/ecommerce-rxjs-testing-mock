@@ -1,5 +1,5 @@
 <div class="productList">
-    <div *ngFor="let product of products">
+    <div role="product" *ngFor="let product of products">
         <img [src]="product.image" alt="">
         <p>{{ product.name }}</p>
         <button (click)="this.addProductToCart(product)">COMPRAR</button>

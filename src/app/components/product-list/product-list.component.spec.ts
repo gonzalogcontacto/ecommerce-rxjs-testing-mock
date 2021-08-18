@@ -1,25 +1,46 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProductListComponent } from './product-list.component';
+import { ProductsService } from '../../services/products.service';
+import { render, screen } from '@testing-library/angular';
+import { createMock } from '@testing-library/angular/jest-utils';
+
+import { of } from 'rxjs';
+import { Product } from 'src/app/models/product.model';
 
 describe('ProductListComponent', () => {
-  let component: ProductListComponent;
-  let fixture: ComponentFixture<ProductListComponent>;
+  test("could load products from service", async () => {
+    const products: Product[] = [
+      {
+        id: '1',
+        name: 'VANS',
+        price: '25'
+      },
+      {
+        id: '2',
+        name: 'ADIDAS',
+        price: '45'
+      },
+    ];
+    
+    // Mocking Service
+    const productsServiceMock = createMock(ProductsService);
+    productsServiceMock.getProducts = jest.fn(() => new Promise(resolve => {products}));
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ProductListComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ProductListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    await render(ProductListComponent, {
+      componentProviders: [
+        {
+          provide: ProductsService,
+          useValue: productsServiceMock,
+        },  
+      ],
+    });
+    
+    setTimeout(() => {
+      const listItems = screen.getAllByRole('product');
+      expect(listItems).toHaveLength(products.length);
+    
+      products.forEach((customer) => screen.getByText(new RegExp(customer.name, 'i')));
+    }, 0)     
+      
+  })
 });
